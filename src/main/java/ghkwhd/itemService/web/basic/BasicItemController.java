@@ -5,10 +5,7 @@ import ghkwhd.itemService.domain.item.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -47,8 +44,7 @@ public class BasicItemController {
     }
 
     @GetMapping("/{itemId}")
-    public String item(@PathVariable long itemId,
-                       Model model) {
+    public String item(@PathVariable long itemId, Model model) {
 
         Item item = itemRepository.findById(itemId);
         model.addAttribute("item", item);
@@ -59,10 +55,38 @@ public class BasicItemController {
     public String addForm() {
         return "basic/addForm";
     }
+    
+/*
+    @PostMapping("/add")
+    // input 태그의 name 속성으로 넘어옴
+    public String addItemV1(@RequestParam String itemName,
+                            @RequestParam int price,
+                            @RequestParam Integer quantity,
+                            Model model) {
+
+        Item item = new Item(itemName, price, quantity);
+        itemRepository.save(item);
+
+        model.addAttribute(item);
+
+        return "basic/item";
+    }
+*/
 
     @PostMapping("/add")
-    public String save() {
-        return "basic/addForm";
+    // input 태그의 name 속성으로 넘어옴
+    public String addItemV2(@ModelAttribute("item") Item item) {
+        
+        // @ModelAttribute가 Item 객체를 생성해 파라미터로 받은 값들ㅇ르 넣어준다
+        // Model에 @ModelAttribute로 지정한 객체를 자동으로 넣어준다 ("item")이라는 이름으로
+            // 이름을 생략하면 클래스명의 첫 글자를 소문자로 변경해서 model에 등록한다 (Item --> item)
+            // @ModelAttribute도 생략 가능
+
+        itemRepository.save(item);
+        
+        return "basic/item";
     }
+
+    
 
 }
