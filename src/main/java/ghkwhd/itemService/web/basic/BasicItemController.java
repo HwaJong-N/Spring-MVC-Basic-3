@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -75,16 +76,40 @@ public class BasicItemController {
 
     @PostMapping("/add")
     // input 태그의 name 속성으로 넘어옴
-    public String addItemV2(@ModelAttribute("item") Item item) {
+    public String addItemV2(@ModelAttribute("item") Item item,
+                            RedirectAttributes redirectAttributes) {
 
-        // @ModelAttribute가 Item 객체를 생성해 파라미터로 받은 값들을 넣어준다 ( 1. 요청 파라미터 처리 )
-        // Model에 @ModelAttribute로 지정한 객체를 자동으로 넣어준다 ("item")이라는 이름으로 ( 2. Model 추가 )
-        // 이름을 생략하면 클래스명의 첫 글자를 소문자로 변경해서 model에 등록한다 (Item --> item)
-        // @ModelAttribute도 생략 가능
+        /*
+        @ModelAttribute가 Item 객체를 생성해 파라미터로 받은 값들을 넣어준다 ( 1. 요청 파라미터 처리 )
+         Model에 @ModelAttribute로 지정한 객체를 자동으로 넣어준다 ("item")이라는 이름으로 ( 2. Model 추가 )
+         이름을 생략하면 클래스명의 첫 글자를 소문자로 변경해서 model에 등록한다 (Item --> item)
+         @ModelAttribute도 생략 가능
+         */
 
-        itemRepository.save(item);
+        Item savedItem = itemRepository.save(item);
 
+        /*
         return "basic/item";
+         위처럼 코드를 작성하면 상품 등록 후, 상품 상세 페이지가 나왔을 때 새로고침하면
+         POST 요청이 계속 반복해서 이루어져 중복으로 상품이 등록됨
+         새로 고침 문제를 해결하려면 상품 저장 후에 뷰 템플릿으로 이동하는 것이 아니라, 상품 상세 화면으로 리다이렉트를 호출
+             PRG Post/Redirect/Get
+
+         //return "redirect:/basic/items/" + item.getId();
+
+         */
+
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+
+        /*
+        RedirectAttributes : 리다이렉트할 때 파라미터를 붙여서 보냄
+        itemId는 아래 return 문에 들어가고, 들어가지 못한 status는
+        쿼리 파라미터 형식으로 전달됨
+         */
+        
+        // redirectAttribute를 사용했기 때문에 아래 처럼 return 가능
+        return "redirect:/basic/items/{itemId}";
     }
 
     @GetMapping("/{itemId}/edit")
