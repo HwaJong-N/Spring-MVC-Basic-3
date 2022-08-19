@@ -76,14 +76,14 @@ public class BasicItemController {
     @PostMapping("/add")
     // input 태그의 name 속성으로 넘어옴
     public String addItemV2(@ModelAttribute("item") Item item) {
-        
-        // @ModelAttribute가 Item 객체를 생성해 파라미터로 받은 값들ㅇ르 넣어준다
-        // Model에 @ModelAttribute로 지정한 객체를 자동으로 넣어준다 ("item")이라는 이름으로
-            // 이름을 생략하면 클래스명의 첫 글자를 소문자로 변경해서 model에 등록한다 (Item --> item)
-            // @ModelAttribute도 생략 가능
+
+        // @ModelAttribute가 Item 객체를 생성해 파라미터로 받은 값들을 넣어준다 ( 1. 요청 파라미터 처리 )
+        // Model에 @ModelAttribute로 지정한 객체를 자동으로 넣어준다 ("item")이라는 이름으로 ( 2. Model 추가 )
+        // 이름을 생략하면 클래스명의 첫 글자를 소문자로 변경해서 model에 등록한다 (Item --> item)
+        // @ModelAttribute도 생략 가능
 
         itemRepository.save(item);
-        
+
         return "basic/item";
     }
 
